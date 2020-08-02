@@ -33,6 +33,37 @@ app.get('/search', (req, res) => {
   });
 });
 
+
+app.get('/item', (req, res) => {
+        console.log("Got to API");
+        let queryParams = req.query;
+        let url = "https://open.api.ebay.com/shopping?callname=GetSingleItem&responseencoding=JSON&appid=ErnestLe-WebTechH-PRD-f2eba4255-d7cfb358&siteid=0&version=967&IncludeSelector=Description,Details,ItemSpecifics";
+        for (var key in queryParams) {
+        var value = queryParams[key];
+        url = url + "&" + key + "=" + value;
+        }
+        
+        console.log("========" + url);
+        
+        https.get(url, (resp) => {
+                  let data = '';
+                  
+                  // A chunk of data has been recieved.
+                  resp.on('data', (chunk) => {
+                          data += chunk;
+                          });
+                  
+                  // The whole response has been received. Print out the result.
+                  resp.on('end', () => {
+                          console.log(JSON.parse(data).explanation);
+                          res.send(JSON.parse(data));
+                          });
+                  
+                  }).on("error", (err) => {
+                        console.log("Error: " + err.message);
+                        });
+        });
+
 // Listen to the App Engine-specified port, or 8080 otherwise
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
